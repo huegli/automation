@@ -17,7 +17,13 @@ def test_get_exif_datetimeorig_tag_extended():
     assert_equal(fileops.get_exif_datetimeorig_tag(exif_file), "2014:12:31 18:03:25")
 
 def test_get_exif_datetimeorig_tag_failures():
-#    base_dir = os.getcwd()
-#    noexif_file = os.path.join(base_dir, 'test_data', 'pics', 'noexif.jpg')
-#    assert_raises(expectionSpec,get_exif_datetimeorig_tag, noexif_file)
-    pass
+    base_dir = os.getcwd()
+    bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'DUMMY.JPG')
+    assert_raises(fileops.EXIFTagError,
+            fileops.get_exif_datetimeorig_tag, bad_file)
+    bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'NOEXIF.JPG')
+    assert_raises(fileops.EXIFTagError,
+            fileops.get_exif_datetimeorig_tag, bad_file)
+    bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'NOTAG.JPG')
+    assert_raises(fileops.EXIFTagError,
+            fileops.get_exif_datetimeorig_tag, bad_file)
