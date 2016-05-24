@@ -3,19 +3,21 @@
 from setuptools import setup
 
 setup(
-        name="picrename"
-        version="0.1"
-        description="Rename pictures with a datestring and incrementing index"
+        name="picrename",
+        version="0.0.1",
+        description="Rename pictures with a datestring and incrementing index",
         entry_points={
             "console_scripts": [
-                "renamepic = renamepic.renamepic_cli:run"
+                "picrename = picrename:main"
                 ]
-            }
+            },
         classifiers=[
             "Natural Language :: English",
-            "Programming Language :: Python :: 2.7",
-        author="Nikolai Schlegel"
-        packages=["renamepic", "renamepic.prnm"]
+            "License :: OSI Approved :: MIT License",
+            "Programming Language :: Python :: 2.7"
+            ],
+        author="Nikolai Schlegel",
+        packages=["picrename", "picrename.prnm"],
         install_requires=[
             ])
 
