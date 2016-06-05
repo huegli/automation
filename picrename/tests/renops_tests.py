@@ -19,5 +19,18 @@ def test_exif_to_datestr_failures():
     assert_raises(renops.DateStrError,renops.exif_to_datestr,"2015: bla bla")
     assert_raises(renops.DateStrError,renops.exif_to_datestr,"2015:12:31 bla")
 
-# renops.rename_all("","A","001")
+def test_get_fname_ext():
+    assert_equal(renops.get_fname_ext("IMG_0123.JPG"),".JPG")
+    assert_equal(renops.get_fname_ext("112233.PNG"), ".PNG")
+    assert_equal(renops.get_fname_ext("bla.jpg"), ".jpg")
+
+def test_incr_indexstr():
+    assert_equal(renops.incr_indexstr("001"), "002")
+    assert_equal(renops.incr_indexstr("42"), "43")
+    assert_equal(renops.incr_indexstr("12345"), "12346")
+    assert_equal(renops.incr_indexstr("999999"), "000000")
+
+#def test_rename_all_basic():
+#    renops.rename_all("test_data/pics","A","001")
+#    assert_equal(0,1)
 

@@ -27,3 +27,4 @@ def test_get_exif_datetimeorig_tag_failures():
     bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'NOTAG.JPG')
     assert_raises(fileops.EXIFTagError,
             fileops.get_exif_datetimeorig_tag, bad_file)
+

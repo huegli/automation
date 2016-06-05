@@ -29,14 +29,3 @@ def get_exif_datetimeorig_tag(fname):
                 return date_string
         else:
             raise EXIFTagError, "No EXIF information found"
-def get_pic_fnames(dirpath):
-    pass
-
-def get_pic_datestring(fname):
-    pass
-
-def rename_file(old_fnamepath, new_fnamepath):
-    pass
-
-def rename_all(dirpath, startletter, startindex):
-    pass
