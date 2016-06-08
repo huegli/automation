@@ -86,14 +86,19 @@ def rename_all(dirpath, startletter, startindex):
        
             fullfname = os.path.join(rootdir, afile)
 
-            exif_data = fileops.get_exif_datetimeorig_tag(fullfname)
+            try:
+                exif_data = fileops.get_exif_datetimeorig_tag(fullfname)
 
-            datestr = exif_to_datestr(exif_data)
+                datestr = exif_to_datestr(exif_data)
+            except:
+                print "Something went wrong with " + afile
 
-            newfname = datestr + "_" + startletter + "_" + indexstr + afileext
+            else:
 
-            newfullfname = os.path.join(rootdir, newfname)
+                newfname = datestr + "_" + startletter + "_" + indexstr + afileext
 
-            os.rename(fullfname, newfullfname)
+                newfullfname = os.path.join(rootdir, newfname)
 
-            indexstr = incr_indexstr(indexstr)
+                os.rename(fullfname, newfullfname)
+
+                indexstr = incr_indexstr(indexstr)
