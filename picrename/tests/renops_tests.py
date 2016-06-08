@@ -36,19 +36,19 @@ def test_incr_indexstr():
 def test_rename_all_basic():
 
     shutil.copytree(os.path.join("test_data","pics"),
-            os.path.join("test_data","temp"))
+            os.path.join("test_data","temp_basic"))
 
-    renops.rename_all(os.path.join("test_data","temp"),"A","001")
+    renops.rename_all(os.path.join("test_data","temp_basic"),"A","001")
 
-    fname1=os.path.join("test_data","temp","20140802_A_001.JPG")
-    fname2=os.path.join("test_data","temp","20141231_A_002.JPG")
-    fname3=os.path.join("test_data","temp","20160305_A_003.JPG")
+    fname1=os.path.join("test_data","temp_basic","20140802_A_001.JPG")
+    fname2=os.path.join("test_data","temp_basic","20141231_A_002.JPG")
+    fname3=os.path.join("test_data","temp_basic","20160305_A_003.JPG")
 
     try:
         assert_true(os.path.exists(fname1) and os.path.isfile(fname1))
         assert_true(os.path.exists(fname2) and os.path.isfile(fname2))
         assert_true(os.path.exists(fname3) and os.path.isfile(fname3))
     finally:
-        shutil.rmtree(os.path.join("test_data","temp"))
+        shutil.rmtree(os.path.join("test_data","temp_basic"))
 
 

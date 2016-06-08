@@ -10,6 +10,15 @@ def get_exif_datetimeorig_tag(fname):
     The return string will have the format 'YYYY:MM:DD HH:MM:SS' or 
     if no EXIF tag is found or the file is not valid or doesn't exist,
     an exception will be thrown
+
+    :param fname:   Name of file to read EXIF tag from
+    :returns:       EXIF tag in specified format
+
+    :Example:
+
+        >>> import fileops
+        >>> print fileops.get_exif_datetimeorig_tag("IMG_1234.JPG")
+        '2013:09:30 15:21:42'
     """
 
     try:
