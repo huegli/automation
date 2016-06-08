@@ -39,30 +39,29 @@ def incr_indexstr(indexstr):
 
     newindexstr = str(index).rjust(length, "0")
 
-    return newindexstr
+    return newindexstr[-length:]
 
 
 def rename_all(dirpath, startletter, startindex):
 
-    index = int(startindex)
+    indexstr = startindex
 
-    allfiles = os.listdir(dirpath)
-    
-    for afile in allfiles:
+    for rootdir, alldirs, allfiles in os.walk(dirpath):
         
-       afileext = get_fname_ext(afile)
+        for afile in allfiles:
+            
+            afileext = get_fname_ext(afile)
        
-       fullfile = os.path.join(dirpath, afile)
+            fullfname = os.path.join(rootdir, afile)
 
-       exif_data = fileops.get_exif_datetimeorig_tag(fullfile)
+            exif_data = fileops.get_exif_datetimeorig_tag(fullfname)
 
-       datestr = exif_to_datestr(exif_data)
+            datestr = exif_to_datestr(exif_data)
 
-       indexstr = str(index).zfill(startindex.len())
-       index = index + 1
+            newfname = datestr + "_" + startletter + "_" + indexstr + afileext
 
-       newfname = datestr + "_" + startletter + "_" + indexstr
+            newfullfname = os.path.join(rootdir, newfname)
 
-       newfullfname = os.path.join(dirpath, newfname, afileext)
+            os.rename(fullfname, newfullfname)
 
-       print newfullfname
+            indexstr = incr_indexstr(indexstr)

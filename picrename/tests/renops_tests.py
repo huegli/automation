@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from nose.tools import *
 
 from picrename.prnm import renops
@@ -30,7 +33,22 @@ def test_incr_indexstr():
     assert_equal(renops.incr_indexstr("12345"), "12346")
     assert_equal(renops.incr_indexstr("999999"), "000000")
 
-#def test_rename_all_basic():
-#    renops.rename_all("test_data/pics","A","001")
-#    assert_equal(0,1)
+def test_rename_all_basic():
+
+    shutil.copytree(os.path.join("test_data","pics"),
+            os.path.join("test_data","temp"))
+
+    renops.rename_all(os.path.join("test_data","temp"),"A","001")
+
+    fname1=os.path.join("test_data","temp","20140802_A_001.JPG")
+    fname2=os.path.join("test_data","temp","20141231_A_002.JPG")
+    fname3=os.path.join("test_data","temp","20160305_A_003.JPG")
+
+    try:
+        assert_true(os.path.exists(fname1) and os.path.isfile(fname1))
+        assert_true(os.path.exists(fname2) and os.path.isfile(fname2))
+        assert_true(os.path.exists(fname3) and os.path.isfile(fname3))
+    finally:
+        shutil.rmtree(os.path.join("test_data","temp"))
+
 
