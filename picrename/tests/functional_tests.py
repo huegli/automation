@@ -28,19 +28,14 @@ def test_help():
 def test_basic_operation():
     
     shutil.copytree(os.path.join("test_data","pics"),
-            os.path.join("test_data","temp_func"))
+            os.path.join("temp","temp_func"))
 
-    curdir = os.getcwd()
-    os.chdir(os.path.join("test_data","temp_func"))
-   
-    subprocess.call(['picrename', '.']) 
+    subprocess.call(['picrename', os.path.join("temp","temp_func")]) 
 
-    os.chdir(curdir)
-
-    fname1=os.path.join("test_data","temp_func","20140802_A_001.JPG")
-    fname2=os.path.join("test_data","temp_func","20141231_A_002.JPG")
-    fname3=os.path.join("test_data","temp_func","20160305_A_003.JPG")
-    fname4=os.path.join("test_data","temp_func","20160625_A_004.JPG")
+    fname1=os.path.join("temp","temp_func","20140802_A_001.JPG")
+    fname2=os.path.join("temp","temp_func","20141231_A_002.JPG")
+    fname3=os.path.join("temp","temp_func","20160305_A_003.JPG")
+    fname4=os.path.join("temp","temp_func","20160625_A_004.JPG")
 
     try:
         assert_true(os.path.exists(fname1) and os.path.isfile(fname1),
@@ -52,5 +47,24 @@ def test_basic_operation():
         assert_true(os.path.exists(fname4) and os.path.isfile(fname4),
                 "Couldn't find new " + fname4)
     finally:
-        shutil.rmtree(os.path.join("test_data","temp_func"))
+        shutil.rmtree(os.path.join("temp","temp_func"))
+
+def test_error_operation():
+    
+    shutil.copytree(os.path.join("test_data","bad_files"),
+            os.path.join("temp","temp_error"))
+
+    picrename_p = subprocess.Popen(['picrename', os.path.join("temp","temp_error")],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+    picrename_err_out = picrename_p.communicate()[0]
+    print picrename_err_out
+
+    try:
+        assert_in('WARNING', picrename_err_out)
+        assert_in('DUMMY.JPG', picrename_err_out)
+        assert_in('NOEXIF.JPG', picrename_err_out)
+        assert_in('NOTAG.JPG', picrename_err_out)
+    finally:
+        shutil.rmtree(os.path.join("temp","temp_error"))
 

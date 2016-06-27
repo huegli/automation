@@ -43,14 +43,14 @@ def test_incr_indexstr():
 def test_rename_all_basic():
 
     shutil.copytree(os.path.join("test_data","pics"),
-            os.path.join("test_data","temp_basic"))
+            os.path.join("temp","temp_basic"))
 
-    renops.rename_all(os.path.join("test_data","temp_basic"),"A","001")
+    renops.rename_all(os.path.join("temp","temp_basic"),"A","001",0)
 
-    fname1=os.path.join("test_data","temp_basic","20140802_A_001.JPG")
-    fname2=os.path.join("test_data","temp_basic","20141231_A_002.JPG")
-    fname3=os.path.join("test_data","temp_basic","20160305_A_003.JPG")
-    fname4=os.path.join("test_data","temp_basic","20160625_A_004.JPG")
+    fname1=os.path.join("temp","temp_basic","20140802_A_001.JPG")
+    fname2=os.path.join("temp","temp_basic","20141231_A_002.JPG")
+    fname3=os.path.join("temp","temp_basic","20160305_A_003.JPG")
+    fname4=os.path.join("temp","temp_basic","20160625_A_004.JPG")
 
     try:
         assert_true(os.path.exists(fname1) and os.path.isfile(fname1),
@@ -62,23 +62,23 @@ def test_rename_all_basic():
         assert_true(os.path.exists(fname4) and os.path.isfile(fname4),
                 "Couldn't find new " + fname4)
     finally:
-        shutil.rmtree(os.path.join("test_data","temp_basic"))
+        shutil.rmtree(os.path.join("temp","temp_basic"))
 
 def test_rename_all_extended():
 
     shutil.copytree("test_data",
-            os.path.join("test_data","temp_ext"))
+            os.path.join("temp","temp_ext"))
 
-    renops.rename_all(os.path.join("test_data","temp_ext"),
-            "S","120042")
+    renops.rename_all(os.path.join("temp","temp_ext"),
+            "S","120042",0)
 
-    fname1=os.path.join("test_data","temp_ext","pics",
+    fname1=os.path.join("temp","temp_ext","pics",
             "20140802_S_120042.JPG")
-    fname2=os.path.join("test_data","temp_ext","pics",
+    fname2=os.path.join("temp","temp_ext","pics",
             "20141231_S_120043.JPG")
-    fname3=os.path.join("test_data","temp_ext","pics",
+    fname3=os.path.join("temp","temp_ext","pics",
             "20160305_S_120044.JPG")
-    fname4=os.path.join("test_data","temp_ext","pics",
+    fname4=os.path.join("temp","temp_ext","pics",
             "20160625_S_120045.JPG")
 
     try:
@@ -91,4 +91,4 @@ def test_rename_all_extended():
         assert_true(os.path.exists(fname4) and os.path.isfile(fname4),
                 "Couldn't find new " + fname4)
     finally:
-        shutil.rmtree(os.path.join("test_data","temp_ext"))
+        shutil.rmtree(os.path.join("temp","temp_ext"))

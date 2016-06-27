@@ -1,5 +1,6 @@
 import os
 import re
+import logging
 
 from picrename.prnm import fileops
 
@@ -57,7 +58,7 @@ def incr_indexstr(indexstr):
     return newindexstr[-length:]
 
 
-def rename_all(dirpath, startletter, startindex):
+def rename_all(dirpath, startletter, startindex, verbose=1):
     """
     Renames all files in a directory that have EXIF data using the
     DateTimeOrig tag information. Renamed files will have the format 
@@ -83,6 +84,13 @@ def rename_all(dirpath, startletter, startindex):
                 recursively.
     """
 
+    if (verbose == 0):
+        logging.getLogger().setLevel(logging.ERROR)
+    elif (verbose > 1):
+        logging.getLogger().setLevel(logging.DEBUG)
+    else:
+        logging.getLogger().setLevel(logging.WARNING)
+
     indexstr = startindex
     datetimestr_to_fullfname_dict = {}
 
@@ -97,21 +105,34 @@ def rename_all(dirpath, startletter, startindex):
             # create the full path to the file
             fullfname = os.path.join(rootdir, afile)
 
+            # check if there is a valid file
+            if not (os.path.exists(fullfname) and
+                    os.path.isfile(fullfname)):
+                logging.warning("Cannot access %r, skipping it", fullfname)
+                continue
+
+            # check if file has EXIF date, exception if not
             try:
-                # check if file has EXIF date, exception if not
                 exif_data = fileops.get_exif_datetimeorig_tag(fullfname)
+            except fileops.EXIFTagError:
+                logging.warning(
+                        "%r does not have a proper EXIF tag, skipping it",
+                        afile)
+                continue
 
-                # extract the date/time string from EXIF, exception if
-                # not the proper format
+            # extract the date/time string from EXIF, exception if
+            # not the proper format
+            try:
                 datetimestr = exif_to_datetimestr(exif_data)
-            except:
-                print "Something went wrong with " + afile
+            except DateStrError:
+                logging.warning(
+                        "%r EXIF tag not the right format, skipping it",
+                        afile)
+                continue
 
-            else:
-
-                # store full file name in dictionarly using date/time
-                # string as a key
-                datetimestr_to_fullfname_dict[datetimestr] = fullfname
+            # store full file name in dictionarly using date/time
+            # string as a key
+            datetimestr_to_fullfname_dict[datetimestr] = fullfname
 
 
     # Go through the alphabetically (and therefore time-stamp sorted)

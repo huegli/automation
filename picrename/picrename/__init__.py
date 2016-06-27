@@ -37,5 +37,5 @@ def main():
 
     args = parser.parse_args()
 
-    renops.rename_all(args.dirname, args.alpha_index , args.num_index)
+    renops.rename_all(args.dirname, args.alpha_index , args.num_index, 1)
 
