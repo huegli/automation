@@ -6,7 +6,7 @@ from picrename.prnm import fileops
 class DateStrError(Exception):
     pass
 
-def exif_to_datestr(exif_data_string):
+def exif_to_datetimestr(exif_data_string):
     """
     Extracts the date from an EXIF tag and reformats it
     """
@@ -14,7 +14,10 @@ def exif_to_datestr(exif_data_string):
                     (?P<year>\d\d\d\d): # match the year
                     (?P<month>\d\d):    # match the month
                     (?P<day>\d\d)       # match the day
-                    \s\d\d:\d\d\:\d\d   # the rest of the data string
+                    \s
+                    (?P<hour>\d\d):     # match the hour
+                    (?P<min>\d\d):      # match the minute
+                    (?P<sec>\d\d)       # match the second
                     """, re.VERBOSE)
 
     match = re.match(dateregex, exif_data_string)
@@ -22,7 +25,10 @@ def exif_to_datestr(exif_data_string):
         year = match.group(1)
         month = match.group(2)
         day = match.group(3)
-        return year + month + day
+        hour = match.group(4)
+        mins = match.group(5)
+        sec = match.group(6)
+        return year + month + day + hour + mins + sec
     else:
         raise DateStrError
 
@@ -76,29 +82,56 @@ def rename_all(dirpath, startletter, startindex):
     .. note::   If dirpath contains subdirectories, these are processed
                 recursively.
     """
-    indexstr = startindex
 
+    indexstr = startindex
+    datetimestr_to_fullfname_dict = {}
+
+    # iterate over all files in subdirectories from given root directory
     for rootdir, alldirs, allfiles in os.walk(dirpath):
         
         for afile in allfiles:
             
-            afileext = get_fname_ext(afile)
+            # store the file extension for later
+            afileext = get_fname_ext(afile).upper()
        
+            # create the full path to the file
             fullfname = os.path.join(rootdir, afile)
 
             try:
+                # check if file has EXIF date, exception if not
                 exif_data = fileops.get_exif_datetimeorig_tag(fullfname)
 
-                datestr = exif_to_datestr(exif_data)
+                # extract the date/time string from EXIF, exception if
+                # not the proper format
+                datetimestr = exif_to_datetimestr(exif_data)
             except:
                 print "Something went wrong with " + afile
 
             else:
 
-                newfname = datestr + "_" + startletter + "_" + indexstr + afileext
+                # store full file name in dictionarly using date/time
+                # string as a key
+                datetimestr_to_fullfname_dict[datetimestr] = fullfname
 
-                newfullfname = os.path.join(rootdir, newfname)
 
-                os.rename(fullfname, newfullfname)
+    # Go through the alphabetically (and therefore time-stamp sorted)
+    # list of keys of the dictionary to do the rename
+    for a_dtstr in sorted(datetimestr_to_fullfname_dict.keys()):
 
-                indexstr = incr_indexstr(indexstr)
+        # we discard the time portion as we don't need it for 
+        # the filename
+        datestr = a_dtstr[:8] 
+
+        newfname = datestr + "_" + startletter + "_" + indexstr + afileext
+
+        newfullfname = os.path.join(rootdir, newfname)
+
+        try:
+            os.rename(datetimestr_to_fullfname_dict[a_dtstr],
+                    newfullfname)
+        except:
+            print "Can't rename file %s to %s" % (
+                    datetimestr_to_fullfname_dict[a_dtstr], newfullfname)
+
+
+        indexstr = incr_indexstr(indexstr)

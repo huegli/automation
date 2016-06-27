@@ -40,6 +40,7 @@ def test_basic_operation():
     fname1=os.path.join("test_data","temp_func","20140802_A_001.JPG")
     fname2=os.path.join("test_data","temp_func","20141231_A_002.JPG")
     fname3=os.path.join("test_data","temp_func","20160305_A_003.JPG")
+    fname4=os.path.join("test_data","temp_func","20160625_A_004.JPG")
 
     try:
         assert_true(os.path.exists(fname1) and os.path.isfile(fname1),
@@ -48,6 +49,8 @@ def test_basic_operation():
                 "Couldn't find new " + fname2) 
         assert_true(os.path.exists(fname3) and os.path.isfile(fname3),
                 "Couldn't find new " + fname3)
+        assert_true(os.path.exists(fname4) and os.path.isfile(fname4),
+                "Couldn't find new " + fname4)
     finally:
         shutil.rmtree(os.path.join("test_data","temp_func"))
 
