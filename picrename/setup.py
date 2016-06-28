@@ -18,6 +18,8 @@ setup(
             ],
         author="Nikolai Schlegel",
         packages=["picrename", "picrename.prnm"],
-        install_requires=[
-            ])
+        install_requires=["piexif"],
+        test_suite = 'nose.collector',
+        test_requires=["nosetests"]
+)
 

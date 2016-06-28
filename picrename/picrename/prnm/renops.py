@@ -61,12 +61,12 @@ def incr_indexstr(indexstr):
 def rename_all(dirpath, startletter, startindex, verbose=1):
     """
     Renames all files in a directory that have EXIF data using the
-    DateTimeOrig tag information. Renamed files will have the format 
+    DateTimeOrig tag information. Renamed files will have the format
     'YYYYMMDD_<startletter>_<incr index>'.
 
     :param dirpath:     Path to do the renaming in
     :param startletter: letter that froms part of the renamed filename
-    :param startindex:  incrementing index that forms part of the 
+    :param startindex:  incrementing index that forms part of the
                         renamed filename
 
 
@@ -98,12 +98,12 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
 
     # iterate over all files in subdirectories from given root directory
     for rootdir, alldirs, allfiles in os.walk(dirpath):
-        
+
         for afile in allfiles:
-            
+
             # store the file extension for later
             afileext = get_fname_ext(afile).upper()
-       
+
             # create the full path to the file
             fullfname = os.path.join(rootdir, afile)
 
@@ -143,13 +143,17 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
     # list of keys of the dictionary to do the rename
     for a_dtstr in sorted(datetimestr_to_fullfname_dict.keys()):
 
-        # we discard the time portion as we don't need it for 
+        # we discard the time portion as we don't need it for
         # the filename
-        datestr = a_dtstr[:8] 
+        datestr = a_dtstr[:8]
 
         newfname = datestr + "_" + startletter + "_" + indexstr + afileext
 
-        newfullfname = os.path.join(rootdir, newfname)
+        # create the new full filename by taking existing path of old 
+        # full filename and combining with new file name
+        newfullfname = os.path.join(
+            os.path.dirname(datetimestr_to_fullfname_dict[a_dtstr]),
+            newfname)
 
         try:
             logging.info("Renaming %r -> %r",

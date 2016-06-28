@@ -15,7 +15,7 @@ def test_exif_to_datestr_extended():
             "20141231180325")
     assert_equal(renops.exif_to_datetimestr("2016:03:05 17:27:23"),
             "20160305172723")
-    
+
     # made up
     assert_equal(renops.exif_to_datetimestr("1970:01:01 00:00:00"),
             "19700101000000")
@@ -56,7 +56,7 @@ def test_rename_all_basic():
         assert_true(os.path.exists(fname1) and os.path.isfile(fname1),
                 "Couldn't find new " + fname1)
         assert_true(os.path.exists(fname2) and os.path.isfile(fname2),
-                "Couldn't find new " + fname2) 
+                "Couldn't find new " + fname2)
         assert_true(os.path.exists(fname3) and os.path.isfile(fname3),
                 "Couldn't find new " + fname3)
         assert_true(os.path.exists(fname4) and os.path.isfile(fname4),
@@ -70,7 +70,7 @@ def test_rename_all_extended():
             os.path.join("temp","temp_ext"))
 
     renops.rename_all(os.path.join("temp","temp_ext"),
-            "S","120042",0)
+            "S","120042",3)
 
     fname1=os.path.join("temp","temp_ext","pics",
             "20140802_S_120042.JPG")
@@ -85,7 +85,7 @@ def test_rename_all_extended():
         assert_true(os.path.exists(fname1) and os.path.isfile(fname1),
                 "Couldn't find new " + fname1)
         assert_true(os.path.exists(fname2) and os.path.isfile(fname2),
-                "Couldn't find new " + fname2) 
+                "Couldn't find new " + fname2)
         assert_true(os.path.exists(fname3) and os.path.isfile(fname3),
                 "Couldn't find new " + fname3)
         assert_true(os.path.exists(fname4) and os.path.isfile(fname4),
