@@ -86,10 +86,12 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
 
     if (verbose == 0):
         logging.getLogger().setLevel(logging.ERROR)
-    elif (verbose > 1):
-        logging.getLogger().setLevel(logging.DEBUG)
-    else:
+    elif (verbose == 1):
         logging.getLogger().setLevel(logging.WARNING)
+    elif (verbose == 2):
+        logging.getLogger().setLevel(logging.INFO)
+    else:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     indexstr = startindex
     datetimestr_to_fullfname_dict = {}
@@ -130,6 +132,8 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
                         afile)
                 continue
 
+            logging.debug("Found EXIF Tag %r for file %r", datetimestr, afile)
+
             # store full file name in dictionarly using date/time
             # string as a key
             datetimestr_to_fullfname_dict[datetimestr] = fullfname
@@ -148,6 +152,9 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
         newfullfname = os.path.join(rootdir, newfname)
 
         try:
+            logging.info("Renaming %r -> %r",
+                    datetimestr_to_fullfname_dict[a_dtstr],
+                    newfullfname)
             os.rename(datetimestr_to_fullfname_dict[a_dtstr],
                     newfullfname)
         except:

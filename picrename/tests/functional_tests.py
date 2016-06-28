@@ -54,7 +54,8 @@ def test_error_operation():
     shutil.copytree(os.path.join("test_data","bad_files"),
             os.path.join("temp","temp_error"))
 
-    picrename_p = subprocess.Popen(['picrename', os.path.join("temp","temp_error")],
+    picrename_p = subprocess.Popen(['picrename', '-v 2',
+        os.path.join("temp","temp_error")],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
     picrename_err_out = picrename_p.communicate()[0]
