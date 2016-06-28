@@ -33,7 +33,8 @@ Numerical index at which to start numbering
             help = """
  0  - No ouput
  1  - Warnings on files that are not pictures with EXIF
- >1 - Print the new names of the picture files
+ 2  - Print the new names of the picture files
+ 3  - Print EXIF Date/Time Tag
             """)
 
     parser.add_argument('-d', '--debug_only',
@@ -48,6 +49,6 @@ the picture files
 
     args = parser.parse_args()
 
-    renops.rename_all(args.dirname, args.alpha_index , args.num_index, 
-            args.verbose)
+    renops.rename_all(args.dirname, args.alpha_index.strip(),
+            args.num_index.strip(), args.verbose)
 

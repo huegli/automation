@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
         name="picrename",
-        version="0.1.0",
+        version="0.2.0",
         description="Rename pictures with a datestring and incrementing index",
         entry_points={
             "console_scripts": [
