@@ -1,6 +1,15 @@
 import piexif
 
+import hachoir_core
+import hachoir_core.cmd_line
+import hachoir_metadata
+import hachoir_parser
+import sys
+
 class EXIFTagError(Exception):
+    pass
+
+class VideoMetadataError(Exception):
     pass
 
 def get_exif_datetimeorig_tag(fname):
@@ -38,3 +47,49 @@ def get_exif_datetimeorig_tag(fname):
                 return date_string
         else:
             raise EXIFTagError, "No EXIF information found"
+
+def get_video_creation_date_metadata(fname):
+
+    """
+    Returns the "Creation date" entry from the metadata of a file
+
+    The return string will have the format
+    '- Creation date: YYYY-MM-DD HH:MM:SS' or if no metadata is found
+    or the file is not valid or doesn't exist, an exception will be thrown
+
+    :param fname:   Name of file to read the metadata from
+    :returns:       creation data metadata in specified format
+
+    :Example:
+
+        >>> import fileops
+        >>> print fileops.get_video_creation_date_metadata("IMG_1234.JPG")
+        '- Creation date: 2013-09-30 15:21:42'
+    """
+
+    fname, realname = hachoir_core.cmd_line.unicodeFilename(
+            fname), fname
+    parser = hachoir_parser.createParser(fname, realname)
+
+    if not parser:
+        raise VideoMetadataError, "Unable to parse video file"
+
+    try:
+        metadata = hachoir_metadata.extractMetadata(parser)
+    except HachoirError:
+        raise VideoMetadataError, "Error extracting metadata "
+    
+    if not metadata:
+        raise VideoMetadataError, "No metadata found" 
+    
+    text = metadata.exportPlaintext()
+
+
+    for line in text:
+        printable = hachoir_core.tools.makePrintable(line,
+                hachoir_core.i18n.getTerminalCharset())
+        if "Creation date" in printable:
+            return printable
+
+    raise VideoMetadataError, "No 'Creation date' found in metadata"
+        

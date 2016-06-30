@@ -28,3 +28,8 @@ def test_get_exif_datetimeorig_tag_failures():
     assert_raises(fileops.EXIFTagError,
             fileops.get_exif_datetimeorig_tag, bad_file)
 
+def test_get_video_creation_date_metadata_basic():
+    base_dir = os.getcwd()
+    video_file = os.path.join(base_dir, 'test_data', 'videos', 'IMG_0421.MOV')
+    assert_equal(fileops.get_video_creation_date_metadata(video_file),
+            "- Creation date: 2016-03-06 01:26:40")

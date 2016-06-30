@@ -101,9 +101,6 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
 
         for afile in allfiles:
 
-            # store the file extension for later
-            afileext = get_fname_ext(afile).upper()
-
             # create the full path to the file
             fullfname = os.path.join(rootdir, afile)
 
@@ -146,6 +143,10 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
         # we discard the time portion as we don't need it for
         # the filename
         datestr = a_dtstr[:8]
+
+        # the file extension from original filename
+        afileext = get_fname_ext(
+                datetimestr_to_fullfname_dict[a_dtstr]).upper()
 
         newfname = datestr + "_" + startletter + "_" + indexstr + afileext
 
