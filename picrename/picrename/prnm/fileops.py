@@ -67,9 +67,12 @@ def get_video_creation_date_metadata(fname):
         '- Creation date: 2013-09-30 15:21:42'
     """
 
-    fname, realname = hachoir_core.cmd_line.unicodeFilename(
-            fname), fname
-    parser = hachoir_parser.createParser(fname, realname)
+    try:
+        fname, realname = hachoir_core.cmd_line.unicodeFilename(
+                fname), fname
+        parser = hachoir_parser.createParser(fname, realname)
+    except:
+        raise VideoMetadataError, "Unable to parse video file"
 
     if not parser:
         raise VideoMetadataError, "Unable to parse video file"
@@ -83,7 +86,6 @@ def get_video_creation_date_metadata(fname):
         raise VideoMetadataError, "No metadata found" 
     
     text = metadata.exportPlaintext()
-
 
     for line in text:
         printable = hachoir_core.tools.makePrintable(line,
