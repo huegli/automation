@@ -72,23 +72,26 @@ def test_rename_all_extended():
     renops.rename_all(os.path.join("temp","temp_ext"),
             "S","120042",3)
 
-    fname1=os.path.join("temp","temp_ext","pics",
-            "20140802_S_120042.JPG")
-    fname2=os.path.join("temp","temp_ext","pics",
-            "20141231_S_120043.JPG")
-    fname3=os.path.join("temp","temp_ext","pics",
-            "20160305_S_120044.JPG")
-    fname4=os.path.join("temp","temp_ext","pics",
-            "20160625_S_120045.JPG")
+    fnames = []
+
+    fnames.append(os.path.join("temp","temp_ext","pics",
+            "20140802_S_120042.JPG"))
+    fnames.append(os.path.join("temp","temp_ext","pics",
+            "20141231_S_120043.JPG"))
+    fnames.append(os.path.join("temp","temp_ext","pics",
+            "20160305_S_120044.JPG"))
+    fnames.append(os.path.join("temp","temp_ext","pics",
+            "20160625_S_120045.JPG"))
+    fnames.append(os.path.join("temp", "temp_ext", 'videos', 
+            "20090327_S_120046.AVI"))
+    fnames.append(os.path.join("temp", "temp_ext", 'videos', 
+            "20090808_S_120047.MOV"))
+    fnames.append(os.path.join("temp", "temp_ext", 'videos', 
+            "20160621_S_120048.mp4"))
 
     try:
-        assert_true(os.path.exists(fname1) and os.path.isfile(fname1),
-                "Couldn't find new " + fname1)
-        assert_true(os.path.exists(fname2) and os.path.isfile(fname2),
-                "Couldn't find new " + fname2)
-        assert_true(os.path.exists(fname3) and os.path.isfile(fname3),
-                "Couldn't find new " + fname3)
-        assert_true(os.path.exists(fname4) and os.path.isfile(fname4),
-                "Couldn't find new " + fname4)
+        for fn in fnames:
+            assert_true(os.path.exists(fn) and os.path.isfile(fn),
+                    "Couldn't find new " + fn)
     finally:
         shutil.rmtree(os.path.join("temp","temp_ext"))
