@@ -25,30 +25,13 @@ def test_help():
     assert_in('positional arguments', chksum_output)
     assert_in('optional arguments', chksum_output)
 
-# def test_basic_operation():
-#     
-#     shutil.copytree(os.path.join("test_data","pics"),
-#             os.path.join("temp","temp_func"))
-# 
-#     subprocess.call(['picrename', os.path.join("temp","temp_func")]) 
-# 
-#     fname1=os.path.join("temp","temp_func","20140802_A_001.JPG")
-#     fname2=os.path.join("temp","temp_func","20141231_A_002.JPG")
-#     fname3=os.path.join("temp","temp_func","20160305_A_003.JPG")
-#     fname4=os.path.join("temp","temp_func","20160625_A_004.JPG")
-# 
-#     try:
-#         assert_true(os.path.exists(fname1) and os.path.isfile(fname1),
-#                 "Couldn't find new " + fname1)
-#         assert_true(os.path.exists(fname2) and os.path.isfile(fname2),
-#                 "Couldn't find new " + fname2) 
-#         assert_true(os.path.exists(fname3) and os.path.isfile(fname3),
-#                 "Couldn't find new " + fname3)
-#         assert_true(os.path.exists(fname4) and os.path.isfile(fname4),
-#                 "Couldn't find new " + fname4)
-#     finally:
-#         shutil.rmtree(os.path.join("temp","temp_func"))
-# 
+def test_basic_operation():
+     
+     chksum_output = subprocess.check_output(['chksum',
+         os.path.join("test_data","id_rsa.pub")]) 
+     assert_in('id_rsa.pub', chksum_output)
+     assert_in('4945185bdb65a118', chksum_output)
+
 # def test_error_operation():
 #     
 #     shutil.copytree(os.path.join("test_data","bad_files"),

@@ -6,7 +6,7 @@ def hashfile(afile, hasher, blocksize=65536):
     while len(buf) > 0:
         hasher.update(buf)
         buf = afile.read(blocksize)
-    return hasher.digest
+    return hasher.hexdigest()
 
 
 
@@ -25,4 +25,5 @@ def main():
     args = parser.parse_args()
 
     for fname in args.fnames:
-        print fname 
+        print "%s: %s" %(fname, 
+                hashfile(open(fname, 'rb'), hashlib.sha256())[:16])
