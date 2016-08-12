@@ -28,9 +28,9 @@ def test_help():
 def test_basic_operation():
      
      chksum_output = subprocess.check_output(['chksum',
-         os.path.join("test_data","id_rsa.pub")]) 
-     assert_in('id_rsa.pub', chksum_output)
-     assert_in('4945185bdb65a118', chksum_output)
+         os.path.join("test_data","test.bin")]) 
+     assert_in('test.bin', chksum_output)
+     assert_in('46a5f1741878d136', chksum_output)
 
 # def test_error_operation():
 #     
