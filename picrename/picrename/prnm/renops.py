@@ -33,6 +33,36 @@ def exif_to_datetimestr(exif_data_string):
     else:
         raise DateStrError
 
+def metadata_to_datetimestr(metadata_string):
+    """
+    Extracts the date from an creation metadata tag and reformats it
+    """
+    dateregex = re.compile(r"""
+                    .*                    
+                    (?P<year>\d\d\d\d)- # match the year
+                    (?P<month>\d\d)-    # match the month
+
+                    (?P<day>\d\d)       # match the day
+                    \s
+                    (?P<hour>\d\d):     # match the hour
+                    (?P<min>\d\d):      # match the minute
+                    (?P<sec>\d\d)       # match the second
+                    """, re.VERBOSE)
+
+    match = re.match(dateregex, metadata_string)
+    if match:
+        year = match.group(1)
+        month = match.group(2)
+        day = match.group(3)
+        hour = match.group(4)
+        mins = match.group(5)
+        sec = match.group(6)
+        return year + month + day + hour + mins + sec
+    else:
+        raise DateStrError
+
+
+
 def get_fname_ext(fname):
     """
     Helper function to get the extension of a filename
@@ -56,6 +86,69 @@ def incr_indexstr(indexstr):
 
     # maintain original length, truncating on the right if needed
     return newindexstr[-length:]
+
+
+def extract_exif(fname):
+    """
+    Attempt to extract a properly formated datetimestr from a valid EXIF
+    tag in the given filename. Return empty string if not successful.
+    """
+
+    try:
+        # check if file has EXIF date, exception if not
+        exif_data = fileops.get_exif_datetimeorig_tag(fname)
+
+        # extract the date/time string from EXIF, exception if
+        # not the proper format
+        datetimestr = exif_to_datetimestr(exif_data)
+
+        logging.debug("Found EXIF Tag %r for file %r", datetimestr, 
+                os.path.basename(fname))
+
+        return datetimestr
+
+    except fileops.EXIFTagError:
+        logging.warning("%r does not have a proper EXIF tag",
+                os.path.basename(fname))
+        return "";
+
+    except DateStrError:
+        logging.warning("%r EXIF tag not the right format",
+                os.path.basename(fname))
+        return "";
+
+def extract_date_metadata(fname):
+    """
+    Attempt to extract a properly formated datetimestr from a valid date
+    metadata tag in the given filename. Return empty string if not successful.
+    """
+
+    try:
+        # check if file has creation date, exception if not
+        date_metadata = fileops.get_video_creation_date_metadata(fname)
+
+        # extract the date/time string from metadata, exception if
+        # not the proper format
+        datetimestr = metadata_to_datetimestr(date_metadata)
+
+        logging.debug("Found creation date metadata %r for file %r",
+            datetimestr, os.path.basename(fname))
+
+        return datetimestr
+
+    except fileops.VideoMetadataError:
+        logging.warning(
+            "%r does not have a proper creation date metadata",
+            os.path.basename(fname))
+
+        return ""
+
+    except DateStrError:
+        logging.warning(
+            "%r creation data metadata not the right format",
+            os.path.basename(fname))
+    
+        return ""
 
 
 def rename_all(dirpath, startletter, startindex, verbose=1):
@@ -111,64 +204,18 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
                 continue
 
             # First try if the file is an image file with EXIF tags
-            try:
-                # check if file has EXIF date, exception if not
-                exif_data = fileops.get_exif_datetimeorig_tag(fullfname)
-                # extract the date/time string from EXIF, exception if
-                # not the proper format
-                datetimestr = exif_to_datetimestr(exif_data)
+            # if so, return valid datetimestr, otherwise try date metadata
+            datetimestr = extract_exif(fullfname)
+            if not (datetimestr):
+                datetimestr = extract_date_metadata(fullfname)
 
-                logging.debug("Found EXIF Tag %r for file %r", datetimestr, afile)
-
-                # store full file name in dictionarly using date/time
-                # string as a key
+            # if valid datetimestr 
+            if (datetimestr):
                 datetimestr_to_fullfname_dict[datetimestr] = fullfname
-
-                continue
-
-            except fileops.EXIFTagError:
+            else:
                 logging.warning(
-                        "%r does not have a proper EXIF tag, skipping it",
-                        afile)
-                continue
-
-            except DateStrError:
-                logging.warning(
-                        "%r EXIF tag not the right format, skipping it",
-                        afile)
-                continue
-
-
-            # Otherwise, it might be a video file with creation date tag
-            try:
-                # check if file has creation date, exception if not
-                date_metadata = fileops.get_video_creation_date_metadata(fullfname)
-                # extract the date/time string from metadata, exception if
-                # not the proper format
-                datetimestr = exif_to_datetimestr(date_metadata)
-
-                logging.debug("Found creation date metadata %r for file %r",
-                        datetimestr, afile)
-
-                # store full file name in dictionarly using date/time
-                # string as a key
-                datetimestr_to_fullfname_dict[datetimestr] = fullfname
-
-                continue
-
-            except fileops.VideoMetadataError:
-                logging.warning(
-                        "%r does not have a proper creation date metadata, skipping it",
-                        afile)
-                continue
-
-            except DateStrError:
-                logging.warning(
-                        "%r EXIF tag not the right format, skipping it",
-                        afile)
-                continue
-
-
+                        "No EXIF or date metadata found in %r, skipping it",
+                        fullfname)
 
     # Go through the alphabetically (and therefore time-stamp sorted)
     # list of keys of the dictionary to do the rename
@@ -196,9 +243,10 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
                     newfullfname)
             os.rename(datetimestr_to_fullfname_dict[a_dtstr],
                     newfullfname)
-        except:
-            print "Can't rename file %s to %s" % (
-                    datetimestr_to_fullfname_dict[a_dtstr], newfullfname)
+        except os.error as oserr:
+            logging.error("Can't rename file %s to %s: %s",
+                    datetimestr_to_fullfname_dict[a_dtstr],
+                    newfullfname, oserr)
 
 
         indexstr = incr_indexstr(indexstr)

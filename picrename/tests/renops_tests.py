@@ -29,6 +29,29 @@ def test_exif_to_datestr_failures():
     assert_raises(renops.DateStrError,renops.exif_to_datetimestr,
             "2015:12:31 bla")
 
+def test_metadata_to_datestr_basic():
+    # actual EXIF data
+    assert_equal(renops.metadata_to_datetimestr(
+        "- Creation date: 2014-08-02 15:36:39"),"20140802153639")
+
+def test_metadata_to_datestr_extended():
+    assert_equal(renops.metadata_to_datetimestr(
+        "- Some date: 2014-12-31 18:03:25"),"20141231180325")
+    assert_equal(renops.metadata_to_datetimestr(
+        "2016-03-05 17:27:23"),"20160305172723")
+    assert_equal(renops.metadata_to_datetimestr(
+        "2015-04-11 20:33:14 This is junk"),"20150411203314")
+
+def test_exif_to_datestr_failures():
+    # this should fail
+    assert_raises(renops.DateStrError,renops.metadata_to_datetimestr,
+            "hello")
+    assert_raises(renops.DateStrError,renops.metadata_to_datetimestr,
+            "2015- bla bla")
+    assert_raises(renops.DateStrError,renops.metadata_to_datetimestr,
+            "2015-12-31 bla")
+
+
 def test_get_fname_ext():
     assert_equal(renops.get_fname_ext("IMG_0123.JPG"),".JPG")
     assert_equal(renops.get_fname_ext("112233.PNG"), ".PNG")
@@ -39,6 +62,46 @@ def test_incr_indexstr():
     assert_equal(renops.incr_indexstr("42"), "43")
     assert_equal(renops.incr_indexstr("12345"), "12346")
     assert_equal(renops.incr_indexstr("999999"), "000000")
+
+def test_extract_exif():
+    base_dir = os.getcwd()
+
+    exif_file = os.path.join(base_dir, 'test_data', 'pics', 'IMG_0422.JPG')
+    assert_equal(renops.extract_exif(exif_file), "20160305172723")
+
+    exif_file = os.path.join(base_dir, 'test_data', 'pics', 'IMG_0232.JPG')
+    assert_equal(renops.extract_exif(exif_file), "20141231180325")
+
+    bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'DUMMY.JPG')
+    assert_equal(renops.extract_exif(bad_file), "")
+
+    bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'NOEXIF.JPG')
+    assert_equal(renops.extract_exif(bad_file), "")
+    
+    bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'NOTAG.JPG')
+    assert_equal(renops.extract_exif(bad_file), "")
+
+def test_extract_date_metadata():
+    base_dir = os.getcwd()
+
+    video_file = os.path.join(base_dir, 'test_data', 'videos', 'IMG_0421.MOV')
+    assert_equal(renops.extract_date_metadata(video_file),"20160306012640")
+
+    video_file = os.path.join(base_dir, 'test_data', 'videos', 
+            '20090808_0347.MOV')
+    assert_equal(renops.extract_date_metadata(video_file),"20090808110044")
+
+    bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'DUMMY.JPG')
+    assert_equal(renops.extract_date_metadata(bad_file), "")
+
+    bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'NOEXIF.JPG')
+    assert_equal(renops.extract_date_metadata(bad_file), "")
+    
+    # this file actually has a valid date metadata tag
+#     bad_file = os.path.join(base_dir, 'test_data', 'bad_files', 'NOTAG.JPG')
+#     assert_equal(renops.extract_date_metadata(bad_file), "")
+
+
 
 def test_rename_all_basic():
 
@@ -74,21 +137,23 @@ def test_rename_all_extended():
 
     fnames = []
 
-    fnames.append(os.path.join("temp","temp_ext","pics",
-            "20140802_S_120042.JPG"))
-    fnames.append(os.path.join("temp","temp_ext","pics",
-            "20141231_S_120043.JPG"))
-    fnames.append(os.path.join("temp","temp_ext","pics",
-            "20160305_S_120044.JPG"))
-    fnames.append(os.path.join("temp","temp_ext","pics",
-            "20160625_S_120045.JPG"))
     fnames.append(os.path.join("temp", "temp_ext", 'videos', 
-            "20090327_S_120046.AVI"))
+            "20090327_S_120042.AVI"))
     fnames.append(os.path.join("temp", "temp_ext", 'videos', 
-            "20090808_S_120047.MOV"))
+            "20090808_S_120043.MOV"))
+    fnames.append(os.path.join("temp","temp_ext","pics",
+            "20140802_S_120044.JPG"))
+    fnames.append(os.path.join("temp","temp_ext","pics",
+            "20141231_S_120045.JPG"))
+    fnames.append(os.path.join("temp","temp_ext","pics",
+            "20160305_S_120046.JPG"))
+    fnames.append(os.path.join("temp","temp_ext","videos",
+            "20160306_S_120047.MOV"))
     fnames.append(os.path.join("temp", "temp_ext", 'videos', 
-            "20160621_S_120048.mp4"))
-
+            "20160622_S_120048.MP4"))
+    fnames.append(os.path.join("temp","temp_ext","pics",
+            "20160625_S_120049.JPG"))
+# 
     try:
         for fn in fnames:
             assert_true(os.path.exists(fn) and os.path.isfile(fn),

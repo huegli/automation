@@ -6,6 +6,8 @@ import hachoir_metadata
 import hachoir_parser
 import sys
 
+import logging
+
 class EXIFTagError(Exception):
     pass
 
@@ -67,6 +69,11 @@ def get_video_creation_date_metadata(fname):
         '- Creation date: 2013-09-30 15:21:42'
     """
 
+    # suppress errors from hachoir calls, use our own logging
+    hachoir_core.config.quiet = True
+
+    # try to access tags associated with video files using
+    # hachoir parser
     try:
         fname, realname = hachoir_core.cmd_line.unicodeFilename(
                 fname), fname
@@ -81,6 +88,10 @@ def get_video_creation_date_metadata(fname):
         metadata = hachoir_metadata.extractMetadata(parser)
     except HachoirError:
         raise VideoMetadataError, "Error extracting metadata "
+    finally:
+        # hachoir doesn't close the file associated with
+        # the parser object, hence need to do this
+        parser.stream._input.close()
     
     if not metadata:
         raise VideoMetadataError, "No metadata found" 
