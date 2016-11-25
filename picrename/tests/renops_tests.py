@@ -145,15 +145,16 @@ def test_rename_all_extended():
             "20140802_S_120044.JPG"))
     fnames.append(os.path.join("temp","temp_ext","pics",
             "20141231_S_120045.JPG"))
+    # Picture _046 is a dummy NOTAG.JPG that has no EXIF but a creation tag
     fnames.append(os.path.join("temp","temp_ext","pics",
-            "20160305_S_120046.JPG"))
+            "20160305_S_120047.JPG"))
     fnames.append(os.path.join("temp","temp_ext","videos",
-            "20160306_S_120047.MOV"))
+            "20160306_S_120048.MOV"))
     fnames.append(os.path.join("temp", "temp_ext", 'videos', 
-            "20160622_S_120048.MP4"))
+            "20160622_S_120049.MP4"))
     fnames.append(os.path.join("temp","temp_ext","pics",
-            "20160625_S_120049.JPG"))
-# 
+            "20160625_S_120050.JPG"))
+ 
     try:
         for fn in fnames:
             assert_true(os.path.exists(fn) and os.path.isfile(fn),

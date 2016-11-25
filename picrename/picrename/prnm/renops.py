@@ -211,7 +211,13 @@ def rename_all(dirpath, startletter, startindex, verbose=1):
 
             # if valid datetimestr 
             if (datetimestr):
+                # this will handle the case when there is already the exact
+                # same datetimestr in the dictionary(shouldn't happen often)
+                while (datetimestr in datetimestr_to_fullfname_dict):
+                    datetimestr = datetimestr + '*'
                 datetimestr_to_fullfname_dict[datetimestr] = fullfname
+                logging.info(
+                        "Entering datetimestr %r to dictionary", datetimestr)
             else:
                 logging.warning(
                         "No EXIF or date metadata found in %r, skipping it",
